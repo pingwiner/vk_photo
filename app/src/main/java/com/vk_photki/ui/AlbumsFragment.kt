@@ -15,6 +15,11 @@ import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk_photki.R
 import com.vk_photki.api.VkPhotoLoader
 import com.vk_photki.ui.api.VkAlbumsLoader
+import com.nostra13.universalimageloader.core.ImageLoader
+import com.vk.sdk.api.model.VKApiCommunity
+import com.vk.sdk.api.model.VKApiUser
+import com.vk_photki.api.VkFriendsLoader
+import com.vk_photki.api.VkGroupsLoader
 
 /**
  * Created by nightrain on 4/4/15.
@@ -29,7 +34,8 @@ fun getAlbumsFragment(userId: String) : AlbumsFragment {
 }
 
 class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
-        VkPhotoLoader.OnAlbumLoadListener, AdapterView.OnItemClickListener {
+        VkPhotoLoader.OnAlbumLoadListener, AdapterView.OnItemClickListener,
+        VkFriendsLoader.OnFriendsLoadListener, VkGroupsLoader.OnGroupsLoadedListener {
 
     private var userId: Int = 0;
     private val TAG = "AlbumsFragment"
@@ -42,6 +48,8 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         userId = Integer.parseInt(getArguments().getString(ARG_USER_ID));
         VkAlbumsLoader(userId, this)
+        VkGroupsLoader(userId, this)
+        //VkFriendsLoader(userId, this)
         setProgressVisibility(true)
         val view = inflater.inflate(R.layout.fragment_albums, container, false);
         mListView = view.findViewById(R.id.list) as ListView;
@@ -50,8 +58,8 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     }
 
     override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        Log.d(TAG, "click: " + position);
         val album = mListView?.getAdapter()?.getItem(position) as VKApiPhotoAlbum
+        Log.d(TAG, "click: " + album.id);
         VkPhotoLoader(userId, album.id, this)
     }
 
@@ -81,6 +89,22 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
 
     override fun onPhotosLoadingFailed(error: VKError) {
         Log.d(TAG, "onPhotosLoadingFailed: " + error.errorMessage);
+    }
+
+    override fun onFriendsReady(friends: List<VKApiUser>) {
+        Log.d(TAG, "onFriendsReady: " + friends.size);
+    }
+
+    override fun onFriendsLoadingFailed(error: VKError) {
+        Log.d(TAG, "onFriendsLoadingFailed");
+    }
+
+    override fun onGroupsReady(groups: List<VKApiCommunity>) {
+        Log.d(TAG, "grops: " + groups.size());
+    }
+
+    override fun onGroupsLoadingFailed(error: VKError) {
+        Log.d(TAG, "onGroupsLoadingFailed");
     }
 
 }

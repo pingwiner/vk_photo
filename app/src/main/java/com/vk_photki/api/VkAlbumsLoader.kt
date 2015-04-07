@@ -3,6 +3,9 @@ package com.vk_photki.ui.api
 import android.util.Log
 import com.vk.sdk.api.*
 import com.vk.sdk.api.model.VKApiPhotoAlbum
+import com.vk.sdk.api.model.VKApiUser
+import com.vk_photki.api.VkLoader
+import org.json.JSONObject
 import java.util.ArrayList
 
 /**
@@ -10,53 +13,36 @@ import java.util.ArrayList
  */
 
 public class VkAlbumsLoader(
-        ownerId: Int,
+        var ownerId: Int,
         var listener: VkAlbumsLoader.OnAlbumsLoadedListener)
-    : VKRequest.VKRequestListener() {
+    : VkLoader<VKApiPhotoAlbum>() {
+
+    init {
+        val request = VKRequest("photos.getAlbums", VKParameters.from(
+                VKApiConst.USER_ID, ownerId,
+                VKApiConst.PHOTO_SIZES, 1));
+        request.executeWithListener(this);
+    }
+
+    override fun parseJson(json: JSONObject): VKApiPhotoAlbum {
+        return VKApiPhotoAlbum().parse(json)
+    }
+
+    override fun onDataReady(data: ArrayList<VKApiPhotoAlbum>) {
+        listener.onAlbumsLoaded(data)
+    }
 
     private val TAG = "VkAlbumsLoader";
+
     trait OnAlbumsLoadedListener {
         public abstract fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>);
         public abstract fun onAlbumsLoadFailed(error: VKError);
     }
 
-    init {
-        getAlbums(ownerId)
-    }
-
-    private fun getAlbums(ownerId: Int) {
-        Log.d(TAG, "request");
-        val request = VKRequest("photos.getAlbums", VKParameters.from(VKApiConst.OWNER_ID, ownerId, VKApiConst.PHOTO_SIZES, 1));
-        request.executeWithListener(this);
-    }
-
-    override public fun onComplete(vkResponse: VKResponse) {
-        val result = ArrayList<VKApiPhotoAlbum>();
-        val json = vkResponse.json;
-        if (json != null) {
-            val response = json.getJSONObject("response");
-            if (response != null) {
-                val count = response.getInt("count");
-                if (count != 0) {
-                    val items = response.getJSONArray("items");
-
-                    for (i in 0..count - 1) {
-                        val albumJson = items.getJSONObject(i)
-                        val album = VKApiPhotoAlbum().parse(albumJson)
-                        result.add(album)
-                    }
-                }
-            }
-        }
-        listener.onAlbumsLoaded(result)
-    }
-
     override public fun onError(error: VKError) {
+        listener.onAlbumsLoadFailed(error)
+        Log.d(TAG, error.toString())
         // Ошибка. Сообщаем пользователю об error.
-    }
-
-    override public fun attemptFailed(request: VKRequest, attemptNumber: Int, totalAttempts: Int) {
-        // Неудачная попытка. В аргументах имеется номер попытки и общее их количество.
     }
 
 }
