@@ -37,8 +37,10 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
     override public fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent == null) return Service.START_STICKY;
         val url = intent.getStringExtra("url")
-        var path = intent.getStringExtra("path")
-        mTasks.add(ServiceTask(url, path))
+        val albumName = intent.getStringExtra("album")
+        synchronized(mTasks) {
+            mTasks.add(ServiceTask(url, albumName))
+        }
         checkTasks();
         return Service.START_STICKY;
     }
@@ -46,20 +48,21 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
     private fun checkTasks() {
         if ((mWorker == null) || (mWorker?.getStatus() == AsyncTask.Status.FINISHED)) {
             if (mTasks.size() > 0) {
-                val task = mTasks.get(0);
-                mTasks.remove(0);
-                mWorker = WorkerTask(this);
-                mWorker?.execute(task.url, task.pathToSave)
+                synchronized(mTasks) {
+                    val task = mTasks.get(0);
+                    mTasks.remove(0);
+                    mWorker = WorkerTask(this, this);
+                    mWorker?.execute(task.url, task.albumName)
+                }
             }
         }
-
     }
 
     override fun onTaskComplete(result: Boolean) {
         checkTasks();
     }
 
-    private data class ServiceTask(var url: String, var pathToSave: String) {}
+    private data class ServiceTask(var url: String, var albumName: String) {}
 }
 
 

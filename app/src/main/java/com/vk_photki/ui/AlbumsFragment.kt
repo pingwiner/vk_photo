@@ -1,5 +1,6 @@
 package com.vk_photki.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -20,18 +21,13 @@ import com.vk.sdk.api.model.VKApiCommunity
 import com.vk.sdk.api.model.VKApiUser
 import com.vk_photki.api.VkFriendsLoader
 import com.vk_photki.api.VkGroupsLoader
+import com.vk_photki.service.DownloadService
+import com.vk_photki.utils.Starter
+import java.util.ArrayList
 
 /**
  * Created by nightrain on 4/4/15.
  */
-
-fun getAlbumsFragment(userId: String) : AlbumsFragment {
-    val args = Bundle()
-    args.putString(AlbumsFragment.ARG_USER_ID, userId)
-    var result = AlbumsFragment()
-    result.setArguments(args)
-    return result
-}
 
 class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         VkPhotoLoader.OnAlbumLoadListener, AdapterView.OnItemClickListener,
@@ -40,6 +36,7 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     private var userId: Int = 0;
     private val TAG = "AlbumsFragment"
     private var mListView: ListView? = null;
+    private var mAlbums: List<VKApiPhotoAlbum> = ArrayList<VKApiPhotoAlbum>();
 
     companion object Args {
         public val ARG_USER_ID: String = "ARG_USER_ID"
@@ -68,6 +65,7 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         setProgressVisibility(false)
         var adapter = AlbumAdapter(getActivity(), albums)
         mListView?.setAdapter(adapter)
+        mAlbums = albums
     }
 
     override public fun onAlbumsLoadFailed(error: VKError) {
@@ -83,8 +81,33 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
 
     }
 
+    private fun findAlbumById(id: Int): VKApiPhotoAlbum? {
+        for (album in mAlbums) {
+            if (album.id == id) return album;
+        }
+        return null;
+    }
+
+    private fun getMaxPhotoPath(photo: VKApiPhoto): String? {
+        if (photo.photo_2560 != null) return photo.photo_2560;
+        if (photo.photo_1280 != null) return photo.photo_1280;
+        if (photo.photo_807 != null) return photo.photo_807;
+        if (photo.photo_604 != null) return photo.photo_604;
+        if (photo.photo_130 != null) return photo.photo_130;
+        if (photo.photo_75 != null) return photo.photo_75;
+        return null;
+    }
+
+
     override fun onPhotosReady(ownerId: Int, albumId: Int, photos: List<VKApiPhoto>) {
         Log.d(TAG, "onPhotosReady: " + ownerId + " " + albumId + " " + photos.size())
+        val album = findAlbumById(albumId);
+        if (album == null) return;
+        for (photo in photos) {
+            val url = getMaxPhotoPath(photo);
+            if (url == null) continue;
+            Starter.startService(getActivity(), url, album.title);
+        }
     }
 
     override fun onPhotosLoadingFailed(error: VKError) {
@@ -107,4 +130,12 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         Log.d(TAG, "onGroupsLoadingFailed");
     }
 
+}
+
+fun getAlbumsFragment(userId: String) : AlbumsFragment {
+    val args = Bundle()
+    args.putString(AlbumsFragment.ARG_USER_ID, userId)
+    var result = AlbumsFragment()
+    result.setArguments(args)
+    return result
 }
