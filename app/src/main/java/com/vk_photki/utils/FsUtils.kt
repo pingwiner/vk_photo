@@ -15,7 +15,7 @@ import java.io.*
 public class FsUtils {
     private val TAG ="FsUtils";
     private val GALLERY_PATH = "/VK_gallery/";
-    private val BUFFER_SIZE = 4096;
+    private val BUFFER_SIZE = 16384;
 
     public fun createExternalStoragePublicPicture(context: Context, inputStream: InputStream, filename: String, albumName:String ) {
         try {
@@ -26,19 +26,17 @@ public class FsUtils {
                     Environment.DIRECTORY_PICTURES + GALLERY_PATH + albumName);
             path.mkdir();
             val file = File(path, filename);
-            val bis = BufferedInputStream(inputStream);
+            val bis = BufferedInputStream(inputStream, BUFFER_SIZE);
             var readBytesCount: Int;
             var data = ByteArray(BUFFER_SIZE);
             var fos = FileOutputStream(file);
-            var bos = BufferedOutputStream(fos)
             do {
                 readBytesCount = bis.read(data)
                 if (readBytesCount > 0) {
-                    bos.write(data, 0, readBytesCount)
+                    fos.write(data, 0, readBytesCount)
                 }
-                bos.flush()
-            } while(readBytesCount == BUFFER_SIZE)
-            bos.close()
+            } while(readBytesCount > -1)
+            fos.close()
             inputStream.close();
             MediaScanner().scanMedia(context, file);
         } catch (e: IOException) {

@@ -89,12 +89,13 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     }
 
     private fun getMaxPhotoPath(photo: VKApiPhoto): String? {
-        if (photo.photo_2560 != null) return photo.photo_2560;
-        if (photo.photo_1280 != null) return photo.photo_1280;
-        if (photo.photo_807 != null) return photo.photo_807;
-        if (photo.photo_604 != null) return photo.photo_604;
-        if (photo.photo_130 != null) return photo.photo_130;
-        if (photo.photo_75 != null) return photo.photo_75;
+        val types = charArray('w' ,'z', 'y' , 'x', 'm', 's');
+
+        for (type in types) {
+            val photoSize = photo.src.getByType(type);
+            if (photoSize != null) return photoSize;
+        }
+
         return null;
     }
 
@@ -106,6 +107,7 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         for (photo in photos) {
             val url = getMaxPhotoPath(photo);
             if (url == null) continue;
+            Log.d(TAG, "url: " + url + ", title: " + album.title);
             Starter.startService(getActivity(), url, album.title);
         }
     }

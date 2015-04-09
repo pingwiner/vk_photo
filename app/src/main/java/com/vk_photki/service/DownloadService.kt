@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import com.vk_photki.R
 import java.util.LinkedList
 
@@ -15,11 +16,12 @@ import java.util.LinkedList
  */
 
 public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
-    private val mNM: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;;
+    private var mNM: NotificationManager? = null;
     private val mTasks = LinkedList<ServiceTask>();
     private val mBinder = ServiceBinder(this);
-    private var mWorker: AsyncTask<String, Int, Boolean>? = null;
+    private var mWorker: WorkerTask? = null;
     private val NOTIFICATION = R.string.operation_finished;
+    private val TAG = "DownloadService";
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -27,14 +29,15 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
 
     override public fun onCreate() {
         super<Service>.onCreate()
+        mNM = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;;
     }
 
     override public fun onDestroy() {
         super<Service>.onDestroy()
-        mNM.cancel(NOTIFICATION);
+        mNM?.cancel(NOTIFICATION);
     }
 
-    override public fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override public fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) return Service.START_STICKY;
         val url = intent.getStringExtra("url")
         val albumName = intent.getStringExtra("album")
@@ -46,13 +49,15 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
     }
 
     private fun checkTasks() {
-        if ((mWorker == null) || (mWorker?.getStatus() == AsyncTask.Status.FINISHED)) {
+        Log.d(TAG, "checkTasks");
+
+        if ((mWorker == null) || (mWorker!!.isComplete())) {
             if (mTasks.size() > 0) {
                 synchronized(mTasks) {
                     val task = mTasks.get(0);
-                    mTasks.remove(0);
                     mWorker = WorkerTask(this, this);
                     mWorker?.execute(task.url, task.albumName)
+                    mTasks.remove(0);
                 }
             }
         }
