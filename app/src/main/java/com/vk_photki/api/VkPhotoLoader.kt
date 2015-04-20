@@ -15,8 +15,8 @@ public open class VkPhotoLoader(var ownerId: Int, var albumId: Int, var listener
     val TAG = "VkPhotoLoader";
 
     trait OnAlbumLoadListener {
-        abstract fun onPhotosReady(ownerId: Int, albumId: Int, photos: List<VKApiPhoto>);
-        abstract fun onPhotosLoadingFailed(error: VKError)
+        fun onPhotosReady(ownerId: Int, albumId: Int, photos: List<VKApiPhoto>);
+        fun onPhotosLoadingFailed(error: VKError)
     }
 
     init {

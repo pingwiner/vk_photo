@@ -20,7 +20,8 @@ public class VkAlbumsLoader(
     init {
         val request = VKRequest("photos.getAlbums", VKParameters.from(
                 VKApiConst.USER_ID, ownerId,
-                VKApiConst.PHOTO_SIZES, 1));
+                "need_covers", 1))
+                //VKApiConst.PHOTO_SIZES, 1));
         request.executeWithListener(this);
     }
 
@@ -35,8 +36,8 @@ public class VkAlbumsLoader(
     private val TAG = "VkAlbumsLoader";
 
     trait OnAlbumsLoadedListener {
-        public abstract fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>);
-        public abstract fun onAlbumsLoadFailed(error: VKError);
+        public fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>);
+        public fun onAlbumsLoadFailed(error: VKError);
     }
 
     override public fun onError(error: VKError) {

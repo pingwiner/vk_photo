@@ -43,4 +43,28 @@ public class FsUtils {
             Log.w(TAG, "Error writing ", e);
         }
     }
+
+    public fun createCachePicture(context: Context, inputStream: InputStream, url: String) {
+        try {
+            var file = getCacheFileFor(context, url)
+            if (file == null) return;
+            val bis = BufferedInputStream(inputStream, BUFFER_SIZE);
+            var readBytesCount: Int;
+            var data = ByteArray(BUFFER_SIZE);
+            var fos = FileOutputStream(file);
+            do {
+                readBytesCount = bis.read(data)
+                if (readBytesCount > 0) {
+                    fos.write(data, 0, readBytesCount)
+                }
+            } while(readBytesCount > -1)
+            fos.close()
+            inputStream.close();
+        } catch (e: IOException) {
+            Log.w(TAG, "Error writing ", e);
+        }
+
+    }
+
+
 }

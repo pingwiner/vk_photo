@@ -1,8 +1,11 @@
 package com.vk_photki.ui
 
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,13 +33,15 @@ import java.util.ArrayList
  */
 
 class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
-        VkPhotoLoader.OnAlbumLoadListener, AdapterView.OnItemClickListener,
-        VkFriendsLoader.OnFriendsLoadListener, VkGroupsLoader.OnGroupsLoadedListener {
+        VkPhotoLoader.OnAlbumLoadListener,
+        VkFriendsLoader.OnFriendsLoadListener, VkGroupsLoader.OnGroupsLoadedListener,
+        RecyclerItemClickListener.OnItemClickListener {
 
     private var userId: Int = 0;
     private val TAG = "AlbumsFragment"
-    private var mListView: ListView? = null;
+    private var mAlbumsList: RecyclerView? = null;
     private var mAlbums: List<VKApiPhotoAlbum> = ArrayList<VKApiPhotoAlbum>();
+    private var mLayoutManager: RecyclerView.LayoutManager? = null;
 
     companion object Args {
         public val ARG_USER_ID: String = "ARG_USER_ID"
@@ -45,27 +50,38 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         userId = Integer.parseInt(getArguments().getString(ARG_USER_ID));
         VkAlbumsLoader(userId, this)
-        VkGroupsLoader(userId, this)
+        //VkGroupsLoader(userId, this)
         //VkFriendsLoader(userId, this)
         setProgressVisibility(true)
         val view = inflater.inflate(R.layout.fragment_albums, container, false);
-        mListView = view.findViewById(R.id.list) as ListView;
-        mListView?.setOnItemClickListener(this)
+        mAlbumsList = view.findViewById(R.id.list) as RecyclerView;
+        mAlbumsList?.setHasFixedSize(true);
+
+        // use a linear layout manager
+        var display = getActivity().getWindowManager().getDefaultDisplay();
+        var size = Point();
+        display.getSize(size);
+        val width = size.x;
+        mLayoutManager = StaggeredGridLayoutManager(width / 200, StaggeredGridLayoutManager.VERTICAL);
+        mAlbumsList?.setLayoutManager(mLayoutManager);
         return view;
     }
 
-    override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        val album = mListView?.getAdapter()?.getItem(position) as VKApiPhotoAlbum
+    override fun onItemClick(view: View, position: Int) {
+        val album = (mAlbumsList?.getAdapter() as AlbumAdapter).getItem(position)
         Log.d(TAG, "click: " + album.id);
         VkPhotoLoader(userId, album.id, this)
     }
 
+
     override public fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>) {
         Log.d(TAG, albums.size().toString() + " albums loaded");
         setProgressVisibility(false)
-        var adapter = AlbumAdapter(getActivity(), albums)
-        mListView?.setAdapter(adapter)
-        mAlbums = albums
+        if (getActivity() != null) {
+            var adapter = AlbumAdapter(getActivity(), albums)
+            mAlbumsList?.setAdapter(adapter)
+            mAlbums = albums
+        }
     }
 
     override public fun onAlbumsLoadFailed(error: VKError) {
@@ -130,6 +146,11 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
 
     override fun onGroupsLoadingFailed(error: VKError) {
         Log.d(TAG, "onGroupsLoadingFailed");
+    }
+
+    override public fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super<Fragment>.onViewCreated(view, savedInstanceState);
+        mAlbumsList?.addOnItemTouchListener(RecyclerItemClickListener(getActivity(), this));
     }
 
 }
