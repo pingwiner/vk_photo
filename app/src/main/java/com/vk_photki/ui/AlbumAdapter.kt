@@ -12,37 +12,23 @@ import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk_photki.R
 
 
-public class AlbumAdapter(var mContext: Context, var mAlbums: List<VKApiPhotoAlbum>)
-    : RecyclerView.Adapter<Holder>() {
+public class AlbumAdapter(context: Context, albums: List<VKApiPhotoAlbum>)
+    : BaseAdapter<VKApiPhotoAlbum>(context, albums) {
 
-    override fun onBindViewHolder(holder: Holder?, position: Int) {
-        val item = mAlbums.get(position);
-        if (holder == null) return;
-        if (holder.title != null) {
-            holder.title?.setText(item.title)
-        }
-        if (holder.description != null) {
-            holder.description?.setText(item.description)
-        }
-        if (holder.cover != null) {
-            if (item.thumb_src != null) {
-                holder.setCover(mContext, item.thumb_src);
-            }
-        }
+    override protected fun getTitle(item: VKApiPhotoAlbum) : String {
+        return item.title
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder? {
-        if (parent == null) return null;
-        val v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.album_layout, parent, false);
-        return Holder(v);
+    override protected fun getDescription(item: VKApiPhotoAlbum) : String {
+        return item.description
     }
 
-    override fun getItemCount(): Int {
-        return mAlbums.size()
+    override protected fun getThumbSrc(item: VKApiPhotoAlbum) : String {
+        return item.thumb_src
     }
 
-    public fun getItem(position: Int): VKApiPhotoAlbum {
-        return mAlbums.get(position)
+    override protected fun getLayoutId() : Int {
+        return R.layout.album_layout
     }
+
 }

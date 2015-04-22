@@ -4,6 +4,7 @@ import com.vk.sdk.api.*
 import com.vk.sdk.api.model.VKApiPhoto
 import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk.sdk.api.model.VKApiUser
+import com.vk_photki.ui.OnDataReadyListener
 import org.json.JSONObject
 import java.util.ArrayList
 
@@ -11,7 +12,7 @@ import java.util.ArrayList
  * Created by nightrain on 4/6/15.
  */
 
-public class VkFriendsLoader(var userId: Int, var listener: VkFriendsLoader.OnFriendsLoadListener) : VkLoader<VKApiUser>() {
+public class VkFriendsLoader(var userId: Int, var listener: OnDataReadyListener<VKApiUser>) : VkLoader<VKApiUser>() {
 
     trait OnFriendsLoadListener {
         fun onFriendsReady(friends: List<VKApiUser>);
@@ -30,11 +31,11 @@ public class VkFriendsLoader(var userId: Int, var listener: VkFriendsLoader.OnFr
     }
 
     override fun onDataReady(data: ArrayList<VKApiUser>) {
-        listener.onFriendsReady(data)
+        listener.onDataReady(data)
     }
 
     override public fun onError(error: VKError) {
-        listener.onFriendsLoadingFailed(error)
+        listener.onDataLoadingFailed(error)
         // Ошибка. Сообщаем пользователю об error.
     }
 

@@ -34,7 +34,7 @@ import java.util.ArrayList
 
 class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         VkPhotoLoader.OnAlbumLoadListener,
-        VkFriendsLoader.OnFriendsLoadListener, VkGroupsLoader.OnGroupsLoadedListener,
+        VkGroupsLoader.OnGroupsLoadedListener,
         RecyclerItemClickListener.OnItemClickListener {
 
     private var userId: Int = 0;
@@ -42,10 +42,6 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     private var mAlbumsList: RecyclerView? = null;
     private var mAlbums: List<VKApiPhotoAlbum> = ArrayList<VKApiPhotoAlbum>();
     private var mLayoutManager: RecyclerView.LayoutManager? = null;
-
-    companion object Args {
-        public val ARG_USER_ID: String = "ARG_USER_ID"
-    }
 
     override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         userId = Integer.parseInt(getArguments().getString(ARG_USER_ID));
@@ -132,13 +128,6 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
         Log.d(TAG, "onPhotosLoadingFailed: " + error.errorMessage);
     }
 
-    override fun onFriendsReady(friends: List<VKApiUser>) {
-        Log.d(TAG, "onFriendsReady: " + friends.size);
-    }
-
-    override fun onFriendsLoadingFailed(error: VKError) {
-        Log.d(TAG, "onFriendsLoadingFailed");
-    }
 
     override fun onGroupsReady(groups: List<VKApiCommunity>) {
         Log.d(TAG, "grops: " + groups.size());

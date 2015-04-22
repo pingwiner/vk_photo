@@ -4,4 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="operation_finished">Выбранные фотоальбомы загружены</string>
+    <string name="action_albums">Альбомы</string>
+    <string name="action_friends">Друзья</string>
+    <string name="action_groups">Группы</string>
 </resources>

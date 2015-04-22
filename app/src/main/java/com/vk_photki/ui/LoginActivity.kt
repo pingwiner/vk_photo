@@ -4,8 +4,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.vk.sdk.*
 import com.vk.sdk.api.VKError
 import com.vk.sdk.dialogs.VKCaptchaDialog
@@ -50,14 +53,47 @@ public class LoginActivity() : FragmentActivity() {
         VKUIHelper.onActivityResult(requestCode, resultCode, data);
     }
 
-    fun showMyAlbumsFragment() {
+    override public fun onCreateOptionsMenu(menu: Menu) : Boolean {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    override public fun onOptionsItemSelected(item: MenuItem) : Boolean {
         var userId = VKSdk.getAccessToken().userId;
-        Log.d(TAG, "userId: " + userId);
-        if (userId == null) return;
+        if (userId != null) {
+            when (item.getItemId()) {
+                R.id.action_albums -> {
+                    showMyAlbumsFragment(userId);
+                }
+                R.id.action_friends -> {
+                    showMyFriendsFragment(userId);
+                }
+                R.id.action_groups -> {
+                    showMyGroupsFragment(userId);
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    fun showFragment(fragment: Fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, getAlbumsFragment(userId))
+                .replace(R.id.container, fragment)
                 .commit();
+
+    }
+
+    fun showMyAlbumsFragment(userId: String) {
+        showFragment(getAlbumsFragment(userId))
+    }
+
+    fun showMyFriendsFragment(userId: String) {
+        showFragment(getFriendsFragment(userId))
+    }
+
+    fun showMyGroupsFragment(userId: String) {
+        showFragment(getGroupsFragment(userId))
     }
 
     private inner class MySdkListener : VKSdkListener() {
