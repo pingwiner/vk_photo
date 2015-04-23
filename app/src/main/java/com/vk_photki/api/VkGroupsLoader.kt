@@ -5,6 +5,7 @@ import com.vk.sdk.api.VKError
 import com.vk.sdk.api.VKParameters
 import com.vk.sdk.api.VKRequest
 import com.vk.sdk.api.model.VKApiCommunity
+import com.vk_photki.ui.OnDataReadyListener
 import com.vk_photki.ui.api.VkAlbumsLoader
 import org.json.JSONObject
 import java.util.ArrayList
@@ -14,12 +15,7 @@ import java.util.ArrayList
  */
 
 public class VkGroupsLoader(var userId: Int,
-                            var listener: VkGroupsLoader.OnGroupsLoadedListener) : VkLoader<VKApiCommunity>() {
-
-    trait OnGroupsLoadedListener {
-        public fun onGroupsReady(groups: List<VKApiCommunity>);
-        public fun onGroupsLoadingFailed(error: VKError);
-    }
+                            var listener: OnDataReadyListener<VKApiCommunity>) : VkLoader<VKApiCommunity>() {
 
     init {
         val request = VKRequest("groups.get", VKParameters.from(
@@ -35,11 +31,11 @@ public class VkGroupsLoader(var userId: Int,
     }
 
     override fun onDataReady(data: ArrayList<VKApiCommunity>) {
-        listener.onGroupsReady(data)
+        listener.onDataReady(data)
     }
 
     override fun onError(error: VKError) {
-        listener.onGroupsLoadingFailed(error)
+        listener.onDataLoadingFailed(error)
     }
 
 }

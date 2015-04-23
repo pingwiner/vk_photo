@@ -22,14 +22,12 @@ import java.net.URI
 public class Holder(var rootView: View)  : RecyclerView.ViewHolder(rootView), ImgCacheTask.OnTaskCompleteListener {
     public var cover: ImageView? = null;
     public var title : TextView? = null;
-    public var description : TextView? = null;
     private var mImgUrl: String = "";
     private val TAG = "Holder";
 
     init {
         cover = rootView.findViewById(R.id.cover) as ImageView
         title = rootView.findViewById(R.id.title) as TextView
-        description = rootView.findViewById(R.id.description) as TextView
     }
 
     public fun setCover(context: Context, url: String?) {

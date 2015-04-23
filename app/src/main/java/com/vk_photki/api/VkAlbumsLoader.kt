@@ -5,6 +5,7 @@ import com.vk.sdk.api.*
 import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk.sdk.api.model.VKApiUser
 import com.vk_photki.api.VkLoader
+import com.vk_photki.ui.OnDataReadyListener
 import org.json.JSONObject
 import java.util.ArrayList
 
@@ -14,7 +15,7 @@ import java.util.ArrayList
 
 public class VkAlbumsLoader(
         var ownerId: Int,
-        var listener: VkAlbumsLoader.OnAlbumsLoadedListener)
+        var listener: OnDataReadyListener<VKApiPhotoAlbum>)
     : VkLoader<VKApiPhotoAlbum>() {
 
     init {
@@ -30,18 +31,13 @@ public class VkAlbumsLoader(
     }
 
     override fun onDataReady(data: ArrayList<VKApiPhotoAlbum>) {
-        listener.onAlbumsLoaded(data)
+        listener.onDataReady(data)
     }
 
     private val TAG = "VkAlbumsLoader";
 
-    trait OnAlbumsLoadedListener {
-        public fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>);
-        public fun onAlbumsLoadFailed(error: VKError);
-    }
-
     override public fun onError(error: VKError) {
-        listener.onAlbumsLoadFailed(error)
+        listener.onDataLoadingFailed(error)
         Log.d(TAG, error.toString())
         // Ошибка. Сообщаем пользователю об error.
     }

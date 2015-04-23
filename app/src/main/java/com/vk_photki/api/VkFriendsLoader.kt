@@ -22,7 +22,7 @@ public class VkFriendsLoader(var userId: Int, var listener: OnDataReadyListener<
     init {
         val request = VKRequest("friends.get", VKParameters.from(
                 VKApiConst.USER_ID, userId,
-                VKApiConst.FIELDS, "nickname,photo_50"));
+                VKApiConst.FIELDS, "nickname,photo_100"));
         request.executeWithListener(this);
     }
 

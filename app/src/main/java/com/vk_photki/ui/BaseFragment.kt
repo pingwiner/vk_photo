@@ -22,12 +22,14 @@ import java.util.ArrayList
 /**
  * Created by nightrain on 4/21/15.
  */
-abstract class BaseFragment<T : VKApiModel>() : Fragment(), OnDataReadyListener<T> {
+abstract class BaseFragment<T : VKApiModel>() : Fragment(),
+        OnDataReadyListener<T>,
+        RecyclerItemClickListener.OnItemClickListener {
     protected abstract val TAG: String;
     protected abstract val LAYOUT_RESOURCE_ID: Int;
     protected var ownerId: Int = 0;
-    private var mList: RecyclerView? = null;
-    private var mDataset: List<T>? = null;
+    protected var mList: RecyclerView? = null;
+    protected var mDataset: List<T>? = null;
     private var mLayoutManager: RecyclerView.LayoutManager? = null;
     private var mProgress: View? = null;
 
@@ -36,13 +38,15 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(), OnDataReadyListener<
     }
 
     override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        ownerId = Integer.parseInt(getArguments().getString(BaseFragment.ARG_USER_ID));
+        ownerId = getArguments().getInt(BaseFragment.ARG_USER_ID);
+        setHasOptionsMenu(true)
         startLoaders();
         setProgressVisibility(true)
         val view = inflater.inflate(LAYOUT_RESOURCE_ID, container, false);
         mList = view.findViewById(R.id.list) as RecyclerView;
         mList?.setHasFixedSize(true);
         mProgress = view.findViewById(R.id.progress);
+        setProgressVisibility(true)
         // use a linear layout manager
         var display = getActivity().getWindowManager().getDefaultDisplay();
         var size = Point();
@@ -72,13 +76,17 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(), OnDataReadyListener<
     }
 
     private fun setProgressVisibility(visible: Boolean) {
-        if (mProgress != null) {
-            if (visible) {
-                mProgress.setVisibility(View.VISIBLE);
-            } else {
-                mProgress.setVisibility(View.GONE);
-            }
+        if (mProgress == null) return
+        if (visible) {
+            mProgress!!.setVisibility(View.VISIBLE);
+        } else {
+            mProgress!!.setVisibility(View.GONE);
         }
+    }
+
+    override public fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super<Fragment>.onViewCreated(view, savedInstanceState)
+        mList?.addOnItemTouchListener(RecyclerItemClickListener(getActivity(), this));
     }
 
 }

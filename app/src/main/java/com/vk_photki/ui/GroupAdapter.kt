@@ -16,10 +16,6 @@ public class GroupAdapter(context: Context, groups: List<VKApiCommunity>)
         return item.name
     }
 
-    override protected fun getDescription(item: VKApiCommunity) : String {
-        return item.screen_name
-    }
-
     override protected fun getThumbSrc(item: VKApiCommunity) : String {
         return item.photo_100
     }

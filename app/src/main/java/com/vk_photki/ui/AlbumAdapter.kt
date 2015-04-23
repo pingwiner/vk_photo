@@ -19,10 +19,6 @@ public class AlbumAdapter(context: Context, albums: List<VKApiPhotoAlbum>)
         return item.title
     }
 
-    override protected fun getDescription(item: VKApiPhotoAlbum) : String {
-        return item.description
-    }
-
     override protected fun getThumbSrc(item: VKApiPhotoAlbum) : String {
         return item.thumb_src
     }

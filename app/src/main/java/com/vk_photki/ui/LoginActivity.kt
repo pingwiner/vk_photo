@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.support.v7.app.ActionBarActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -13,9 +14,11 @@ import com.vk.sdk.*
 import com.vk.sdk.api.VKError
 import com.vk.sdk.dialogs.VKCaptchaDialog
 import com.vk_photki.R
+import java.lang.Integer
 
-public class LoginActivity() : FragmentActivity() {
+public class LoginActivity() : ActionBarActivity() {
     private val TAG = "LoginActivity";
+    private var userId = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +36,7 @@ public class LoginActivity() : FragmentActivity() {
         VKUIHelper.onResume(this);
         if (VKSdk.isLoggedIn()) {
             Log.d(TAG, "Logged In");
-            showMyAlbumsFragment();
+            showAlbumsFragment(userId);
         } else {
             Log.d(TAG, " not logged In");
             VKSdk.authorize(
@@ -59,17 +62,19 @@ public class LoginActivity() : FragmentActivity() {
     }
 
     override public fun onOptionsItemSelected(item: MenuItem) : Boolean {
-        var userId = VKSdk.getAccessToken().userId;
-        if (userId != null) {
+        Log.d(TAG, "onOptionsItemSelected " + item.getItemId())
+        userId = Integer.parseInt(VKSdk.getAccessToken().userId);
+        Log.d(TAG, "userId " + userId)
+        if (userId != 0) {
             when (item.getItemId()) {
                 R.id.action_albums -> {
-                    showMyAlbumsFragment(userId);
+                    showAlbumsFragment(userId);
                 }
                 R.id.action_friends -> {
-                    showMyFriendsFragment(userId);
+                    showFriendsFragment(userId);
                 }
                 R.id.action_groups -> {
-                    showMyGroupsFragment(userId);
+                    showGroupsFragment(userId);
                 }
             }
         }
@@ -79,20 +84,24 @@ public class LoginActivity() : FragmentActivity() {
     fun showFragment(fragment: Fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
+                .addToBackStack(null)
                 .replace(R.id.container, fragment)
                 .commit();
 
     }
 
-    fun showMyAlbumsFragment(userId: String) {
+    public fun showAlbumsFragment(userId: Int) {
+        Log.d(TAG, "showMyAlbumsFragment");
         showFragment(getAlbumsFragment(userId))
     }
 
-    fun showMyFriendsFragment(userId: String) {
+    public fun showFriendsFragment(userId: Int) {
+        Log.d(TAG, "showMyFriendsFragment");
         showFragment(getFriendsFragment(userId))
     }
 
-    fun showMyGroupsFragment(userId: String) {
+    public fun showGroupsFragment(userId: Int) {
+        Log.d(TAG, "showMyGroupsFragment");
         showFragment(getGroupsFragment(userId))
     }
 
@@ -119,17 +128,20 @@ public class LoginActivity() : FragmentActivity() {
 
         override fun onReceiveNewToken(newToken: VKAccessToken) {
             Log.d(TAG, "onReceiveNewToken: " + newToken.accessToken);
-            showMyAlbumsFragment();
+            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
+            showAlbumsFragment(userId);
         }
 
         override fun onAcceptUserToken(token: VKAccessToken) {
             Log.d(TAG, "onAcceptUserToken: " + token.accessToken);
-            showMyAlbumsFragment();
+            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
+            showAlbumsFragment(userId);
         }
 
         override fun onRenewAccessToken(token: VKAccessToken) {
             Log.d(TAG, "onRenewAccessToken: " + token.accessToken);
-            showMyAlbumsFragment();
+            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
+            showAlbumsFragment(userId);
         }
     }
 }

@@ -2,9 +2,12 @@ package com.vk_photki.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import com.vk.sdk.api.model.VKApiUser
 import com.vk_photki.R
 import com.vk_photki.api.VkFriendsLoader
+import com.vk_photki.api.VkPhotoLoader
 
 /**
  * Created by nightrain on 4/22/15.
@@ -20,6 +23,12 @@ public class FriendsFragment() : BaseFragment<VKApiUser>() {
 
     override fun getAdapter(context: Context, data: List<VKApiUser>): BaseAdapter<VKApiUser> {
         return FriendAdapter(context, data)
+    }
+
+    override fun onItemClick(view: View, position: Int) {
+        val friend = (mList?.getAdapter() as FriendAdapter).getItem(position)
+        Log.d(TAG, "click: " + friend.id);
+        (getActivity() as LoginActivity).showAlbumsFragment(friend.id)
     }
 
 }

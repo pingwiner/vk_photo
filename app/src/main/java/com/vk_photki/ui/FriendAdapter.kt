@@ -15,10 +15,6 @@ public class FriendAdapter(context: Context, friends: List<VKApiUser>)
         return item.first_name + " " + item.last_name
     }
 
-    override protected fun getDescription(item: VKApiUser) : String {
-        return ""
-    }
-
     override protected fun getThumbSrc(item: VKApiUser) : String {
         return item.photo_100
     }

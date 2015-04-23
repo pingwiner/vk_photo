@@ -1,8 +1,10 @@
 package com.vk_photki.ui
 
 import android.content.Context
+import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 
 /**
@@ -16,9 +18,6 @@ abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
         if (holder == null) return;
         if (holder.title != null) {
             holder.title?.setText(getTitle(item))
-        }
-        if (holder.description != null) {
-            holder.description?.setText(getDescription(item))
         }
         if (holder.cover != null) {
             val thumbSrc = getThumbSrc(item);
@@ -44,7 +43,6 @@ abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
     }
 
     protected abstract fun getTitle(item: T) : String;
-    protected abstract fun getDescription(item: T) : String;
     protected abstract fun getThumbSrc(item: T) : String;
     protected abstract fun getLayoutId() : Int;
 

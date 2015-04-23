@@ -1,5 +1,6 @@
 package com.vk_photki.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
@@ -32,70 +33,34 @@ import java.util.ArrayList
  * Created by nightrain on 4/4/15.
  */
 
-class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
-        VkPhotoLoader.OnAlbumLoadListener,
-        VkGroupsLoader.OnGroupsLoadedListener,
-        RecyclerItemClickListener.OnItemClickListener {
+class AlbumsFragment() : BaseFragment<VKApiPhotoAlbum>() ,
+        VkPhotoLoader.OnAlbumLoadListener {
+    override protected val TAG: String = "AlbumsFragment";
+    override protected val LAYOUT_RESOURCE_ID: Int = R.layout.fragment_albums;
 
-    private var userId: Int = 0;
-    private val TAG = "AlbumsFragment"
-    private var mAlbumsList: RecyclerView? = null;
-    private var mAlbums: List<VKApiPhotoAlbum> = ArrayList<VKApiPhotoAlbum>();
-    private var mLayoutManager: RecyclerView.LayoutManager? = null;
+    override fun startLoaders() {
+        VkAlbumsLoader(ownerId, this)
+    }
 
-    override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        userId = Integer.parseInt(getArguments().getString(ARG_USER_ID));
-        VkAlbumsLoader(userId, this)
-        //VkGroupsLoader(userId, this)
-        //VkFriendsLoader(userId, this)
-        setProgressVisibility(true)
-        val view = inflater.inflate(R.layout.fragment_albums, container, false);
-        mAlbumsList = view.findViewById(R.id.list) as RecyclerView;
-        mAlbumsList?.setHasFixedSize(true);
-
-        // use a linear layout manager
-        var display = getActivity().getWindowManager().getDefaultDisplay();
-        var size = Point();
-        display.getSize(size);
-        val width = size.x;
-        mLayoutManager = StaggeredGridLayoutManager(width / 200, StaggeredGridLayoutManager.VERTICAL);
-        mAlbumsList?.setLayoutManager(mLayoutManager);
-        return view;
+    override fun getAdapter(context: Context, data: List<VKApiPhotoAlbum>): BaseAdapter<VKApiPhotoAlbum> {
+        return AlbumAdapter(context, data)
     }
 
     override fun onItemClick(view: View, position: Int) {
-        val album = (mAlbumsList?.getAdapter() as AlbumAdapter).getItem(position)
+        val album = (mList?.getAdapter() as AlbumAdapter).getItem(position)
         Log.d(TAG, "click: " + album.id);
-        VkPhotoLoader(userId, album.id, this)
-    }
-
-
-    override public fun onAlbumsLoaded(albums: List<VKApiPhotoAlbum>) {
-        Log.d(TAG, albums.size().toString() + " albums loaded");
-        setProgressVisibility(false)
-        if (getActivity() != null) {
-            var adapter = AlbumAdapter(getActivity(), albums)
-            mAlbumsList?.setAdapter(adapter)
-            mAlbums = albums
-        }
-    }
-
-    override public fun onAlbumsLoadFailed(error: VKError) {
-        Toast.makeText(getActivity(), error.errorMessage, Toast.LENGTH_SHORT).show()
-        setProgressVisibility(false)
+        VkPhotoLoader(ownerId, album.id, this)
     }
 
     override public fun onActivityCreated(savedInstanceState: Bundle?) {
-        super<Fragment>.onActivityCreated(savedInstanceState)
-    }
-
-    private fun setProgressVisibility(visible: Boolean) {
-
+        super<BaseFragment>.onActivityCreated(savedInstanceState)
     }
 
     private fun findAlbumById(id: Int): VKApiPhotoAlbum? {
-        for (album in mAlbums) {
-            if (album.id == id) return album;
+        if (mDataset == null) return null;
+        for (i in 0..mDataset!!.size()) {
+            val album = mDataset?.get(i)
+            if (album!!.id == id) return album;
         }
         return null;
     }
@@ -129,24 +94,11 @@ class AlbumsFragment() : Fragment(), VkAlbumsLoader.OnAlbumsLoadedListener,
     }
 
 
-    override fun onGroupsReady(groups: List<VKApiCommunity>) {
-        Log.d(TAG, "grops: " + groups.size());
-    }
-
-    override fun onGroupsLoadingFailed(error: VKError) {
-        Log.d(TAG, "onGroupsLoadingFailed");
-    }
-
-    override public fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super<Fragment>.onViewCreated(view, savedInstanceState);
-        mAlbumsList?.addOnItemTouchListener(RecyclerItemClickListener(getActivity(), this));
-    }
-
 }
 
-fun getAlbumsFragment(userId: String) : AlbumsFragment {
+fun getAlbumsFragment(userId: Int) : AlbumsFragment {
     val args = Bundle()
-    args.putString(AlbumsFragment.ARG_USER_ID, userId)
+    args.putInt(BaseFragment.ARG_USER_ID, userId)
     var result = AlbumsFragment()
     result.setArguments(args)
     return result
