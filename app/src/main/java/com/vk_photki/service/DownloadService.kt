@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Binder
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import com.vk_photki.R
@@ -22,6 +23,12 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
     private var mWorker: WorkerTask? = null;
     private val NOTIFICATION = R.string.operation_finished;
     private val TAG = "DownloadService";
+    private var mMax: Int = 0;
+
+    companion object Actions {
+        public val ACTION_COMPLETE: String = "com.vk_photki.service.ACTION_COMPLETE";
+        public val ARG_PERCENTS: String = "ARG_PERCENTS";
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -43,6 +50,7 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
         val albumName = intent.getStringExtra("album")
         synchronized(mTasks) {
             mTasks.add(ServiceTask(url, albumName))
+            if (mTasks.size() > mMax) mMax = mTasks.size()
         }
         checkTasks();
         return Service.START_STICKY;
@@ -58,9 +66,23 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
                     mWorker = WorkerTask(this, this);
                     mWorker?.execute(task.url, task.albumName)
                     mTasks.remove(0);
+                    notify(100 - mTasks.size() * 100 / mMax)
                 }
+            } else {
+                notify(100)
+                mMax = 0;
             }
         }
+    }
+
+    private fun notify(percents: Int) {
+        Log.d(TAG, "notify: " + percents);
+        val i = Intent();
+        i.setAction(ACTION_COMPLETE)
+        val args = Bundle();
+        args.putInt(ARG_PERCENTS, percents)
+        i.putExtras(args)
+        sendBroadcast(i)
     }
 
     override fun onTaskComplete(result: Boolean) {

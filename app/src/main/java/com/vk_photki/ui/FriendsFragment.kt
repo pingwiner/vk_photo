@@ -17,6 +17,11 @@ public class FriendsFragment() : BaseFragment<VKApiUser>() {
     override val TAG: String = "FriendsFragment"
     override val LAYOUT_RESOURCE_ID: Int = R.layout.fragment_albums
 
+    override public fun onResume() {
+        super<BaseFragment>.onResume()
+        getActivity().setTitle(R.string.action_friends);
+    }
+
     override fun startLoaders() {
         VkFriendsLoader(ownerId, this)
     }

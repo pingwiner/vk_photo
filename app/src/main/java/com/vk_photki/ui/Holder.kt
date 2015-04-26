@@ -5,6 +5,7 @@ import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.vk_photki.R
@@ -23,11 +24,13 @@ public class Holder(var rootView: View)  : RecyclerView.ViewHolder(rootView), Im
     public var cover: ImageView? = null;
     public var title : TextView? = null;
     private var mImgUrl: String = "";
+    public var checkbox: CheckBox? = null;
     private val TAG = "Holder";
 
     init {
         cover = rootView.findViewById(R.id.cover) as ImageView
         title = rootView.findViewById(R.id.title) as TextView
+        checkbox = rootView.findViewById(R.id.select) as CheckBox
     }
 
     public fun setCover(context: Context, url: String?) {
@@ -43,9 +46,10 @@ public class Holder(var rootView: View)  : RecyclerView.ViewHolder(rootView), Im
     override fun onTaskComplete(result: Boolean, url: Uri?) {
         Log.d(TAG, "onTaskComplete: " + url + " " + result);
         if (url == null) return;
-        if (url.equals(mImgUrl)) {
+        //Log.d(TAG, "mImgUrl "+ mImgUrl);
+        //if (url.equals(mImgUrl)) {
             cover?.setImageURI(url)
-        }
+        //}
     }
 
 }

@@ -10,10 +10,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk_photki.R
+import java.util.HashMap
 
 
-public class AlbumAdapter(context: Context, albums: List<VKApiPhotoAlbum>)
-    : BaseAdapter<VKApiPhotoAlbum>(context, albums) {
+public class AlbumAdapter(context: Context, albums: List<VKApiPhotoAlbum>, selectedItems: HashMap<Int, Boolean>)
+    : SelectableAdapter<VKApiPhotoAlbum>(context, albums, selectedItems) {
 
     override protected fun getTitle(item: VKApiPhotoAlbum) : String {
         return item.title

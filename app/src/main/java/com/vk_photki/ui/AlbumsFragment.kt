@@ -1,7 +1,9 @@
 package com.vk_photki.ui
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -33,27 +35,46 @@ import java.util.ArrayList
  * Created by nightrain on 4/4/15.
  */
 
-class AlbumsFragment() : BaseFragment<VKApiPhotoAlbum>() ,
+class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
         VkPhotoLoader.OnAlbumLoadListener {
     override protected val TAG: String = "AlbumsFragment";
     override protected val LAYOUT_RESOURCE_ID: Int = R.layout.fragment_albums;
+
+    override public fun onResume() {
+        super<SelectableFragment>.onResume()
+        val act:LoginActivity = getActivity() as LoginActivity;
+        val id = act.getUserId();
+        if (id == ownerId) {
+            act.setTitle(R.string.action_albums);
+        } else {
+            if (ownerId > 0) {
+                act.setTitle(act.getString(R.string.action_albums) + " " + act.getString(R.string.of_friend));
+            } else {
+                act.setTitle(act.getString(R.string.action_albums) + " " + act.getString(R.string.of_group));
+            }
+
+        }
+    }
 
     override fun startLoaders() {
         VkAlbumsLoader(ownerId, this)
     }
 
     override fun getAdapter(context: Context, data: List<VKApiPhotoAlbum>): BaseAdapter<VKApiPhotoAlbum> {
-        return AlbumAdapter(context, data)
+        return AlbumAdapter(context, data, mSelectedItems)
     }
 
     override fun onItemClick(view: View, position: Int) {
         val album = (mList?.getAdapter() as AlbumAdapter).getItem(position)
         Log.d(TAG, "click: " + album.id);
+        //setProgressVisibility(true)
         VkPhotoLoader(ownerId, album.id, this)
+        //(getActivity() as LoginActivity).showPhotosFragment(ownerId, album.id)
+
     }
 
     override public fun onActivityCreated(savedInstanceState: Bundle?) {
-        super<BaseFragment>.onActivityCreated(savedInstanceState)
+        super<SelectableFragment>.onActivityCreated(savedInstanceState)
     }
 
     private fun findAlbumById(id: Int): VKApiPhotoAlbum? {
@@ -96,7 +117,9 @@ class AlbumsFragment() : BaseFragment<VKApiPhotoAlbum>() ,
 
 }
 
+
 fun getAlbumsFragment(userId: Int) : AlbumsFragment {
+    Log.d("getAlbumsFragment", "userId: " + userId)
     val args = Bundle()
     args.putInt(BaseFragment.ARG_USER_ID, userId)
     var result = AlbumsFragment()

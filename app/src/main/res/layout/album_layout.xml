@@ -19,20 +19,37 @@
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
+            android:scaleType="center"
             android:layout_gravity="center"
              />
 
-        <TextView
-            android:id="@+id/title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:gravity="center"
-            android:layout_gravity="bottom"
-            android:background="#ffffff"
-            android:padding="4pt"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_gravity="bottom"
+            android:background="#40000000"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="#ffffff"
+                android:singleLine="true"
+                android:padding="4pt"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+
+            <CheckBox
+                android:id="@+id/select"
+                android:visibility="gone"
+                android:padding="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
     </FrameLayout>
 
 </android.support.v7.widget.CardView>

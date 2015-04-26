@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.vk.sdk.api.VKError
 import com.vk.sdk.api.model.VKApiModel
 import com.vk.sdk.api.model.VKApiPhotoAlbum
@@ -35,6 +37,10 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
 
     companion object Args {
         public val ARG_USER_ID: String = "ARG_USER_ID"
+    }
+
+    override public fun onCreate(state: Bundle?) {
+        super<Fragment>.onCreate(state);
     }
 
     override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
@@ -75,7 +81,7 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
         setProgressVisibility(false)
     }
 
-    private fun setProgressVisibility(visible: Boolean) {
+    protected fun setProgressVisibility(visible: Boolean) {
         if (mProgress == null) return
         if (visible) {
             mProgress!!.setVisibility(View.VISIBLE);

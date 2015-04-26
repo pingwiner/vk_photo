@@ -25,6 +25,7 @@ abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
                 holder.setCover(context, thumbSrc);
             }
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder? {

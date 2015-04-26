@@ -17,6 +17,16 @@
         android:orderInCategory="3"
         app:showAsAction="always" />
 
+    <item android:id="@+id/action_download"
+        android:title="@string/action_download"
+        android:orderInCategory="3"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_select_all"
+        android:title="@string/action_select_all"
+        android:orderInCategory="3"
+        app:showAsAction="never" />
+
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

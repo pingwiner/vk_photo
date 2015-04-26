@@ -6,5 +6,10 @@
     <string name="operation_finished">Выбранные фотоальбомы загружены</string>
     <string name="action_albums">Альбомы</string>
     <string name="action_friends">Друзья</string>
+    <string name="of_friend">друга</string>
+    <string name="of_group">группы</string>
     <string name="action_groups">Группы</string>
+    <string name="action_download">Скачать</string>
+    <string name="action_select_all">Выделить все</string>
+
 </resources>

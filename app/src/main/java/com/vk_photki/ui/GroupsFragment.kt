@@ -19,6 +19,11 @@ public class GroupsFragment() : BaseFragment<VKApiCommunity>() {
     override val TAG: String = "GroupsFragment"
     override val LAYOUT_RESOURCE_ID: Int = R.layout.fragment_albums
 
+    override public fun onResume() {
+        super<BaseFragment>.onResume()
+        getActivity().setTitle(R.string.action_groups);
+    }
+
     override fun startLoaders() {
         VkGroupsLoader(ownerId, this)
     }
@@ -30,7 +35,7 @@ public class GroupsFragment() : BaseFragment<VKApiCommunity>() {
     override fun onItemClick(view: View, position: Int) {
         val group = (mList?.getAdapter() as GroupAdapter).getItem(position)
         Log.d(TAG, "click: " + group.id);
-        (getActivity() as LoginActivity).showGroupsFragment(group.id)
+        (getActivity() as LoginActivity).showAlbumsFragment(-group.id)
     }
 
 
