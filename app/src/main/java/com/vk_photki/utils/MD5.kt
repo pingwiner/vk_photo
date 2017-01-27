@@ -13,20 +13,20 @@ public class MD5(var s: String) {
         try {
             // Create MD5 Hash
             val digest = java.security.MessageDigest.getInstance(MD5);
-            digest.update(s.getBytes());
+            digest.update(s.toByteArray(Charsets.UTF_8));
             val messageDigest = digest.digest();
 
             // Create Hex String
             val hexString = StringBuilder();
             for (aMessageDigest in  messageDigest) {
                 var h = Integer.toHexString(aMessageDigest.toInt());
-                while (h.length() < 2) h = "0" + h;
+                while (h.length < 2) h = "0" + h;
                 hexString.append(h);
             }
             mResult = hexString.toString();
 
         } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

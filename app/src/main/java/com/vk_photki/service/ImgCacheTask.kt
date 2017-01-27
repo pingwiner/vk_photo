@@ -38,7 +38,7 @@ public class ImgCacheTask(var context: Context, var listener: ImgCacheTask.OnTas
 
     }
 
-    public trait OnTaskCompleteListener {
+    public interface OnTaskCompleteListener {
         public fun onTaskComplete(result: Boolean, url: Uri?)
     }
 

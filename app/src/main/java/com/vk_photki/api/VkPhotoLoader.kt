@@ -14,7 +14,7 @@ import java.util.ArrayList
 public open class VkPhotoLoader(var ownerId: Int, var albumId: Int, var listener: VkPhotoLoader.OnAlbumLoadListener): VkLoader<VKApiPhoto>() {
     val TAG = "VkPhotoLoader";
 
-    trait OnAlbumLoadListener {
+    interface OnAlbumLoadListener {
         fun onPhotosReady(ownerId: Int, albumId: Int, photos: List<VKApiPhoto>);
         fun onPhotosLoadingFailed(error: VKError)
     }

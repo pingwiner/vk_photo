@@ -18,11 +18,11 @@ public class WorkerTask(var context: Context, var listener: WorkerTask.OnTaskCom
     override fun doInBackground(vararg params: String?): Boolean? {
         val albumName = params[1];
         if (albumName == null) return false;
-        val urlString = params[0];
+        val urlString: String? = params[0];
         if (urlString == null) return false;
         Log.d(TAG, "loading " + urlString);
         val url = URL(urlString);
-        mFileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
+        mFileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length);
         val conn = url.openConnection();
         FsUtils().createExternalStoragePublicPicture(context, conn.getInputStream(), mFileName!!, albumName)
         return true;
@@ -36,7 +36,7 @@ public class WorkerTask(var context: Context, var listener: WorkerTask.OnTaskCom
         listener.onTaskComplete(result)
     }
 
-    public trait OnTaskCompleteListener {
+    public interface OnTaskCompleteListener {
         public fun onTaskComplete(result: Boolean)
     }
 

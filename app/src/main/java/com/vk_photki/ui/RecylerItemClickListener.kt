@@ -1,7 +1,6 @@
 package com.vk_photki.ui
 
 import android.content.Context
-import android.support.v7.internal.widget.AdapterViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -13,7 +12,7 @@ import android.view.View
 public class RecyclerItemClickListener(var context: Context, var clickListener: RecyclerItemClickListener.OnItemClickListener) : RecyclerView.OnItemTouchListener {
     private var mGestureDetector: GestureDetector = GestureDetector(context, MySimpleOnGestureListener());
 
-    public trait OnItemClickListener {
+    public interface OnItemClickListener {
         public fun onItemClick(view: View, position: Int);
     }
 
@@ -26,6 +25,10 @@ public class RecyclerItemClickListener(var context: Context, var clickListener: 
     }
 
     override public fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) { }
+
+    override public fun onRequestDisallowInterceptTouchEvent(b: Boolean) {
+
+    }
 }
 
 class MySimpleOnGestureListener : GestureDetector.SimpleOnGestureListener() {

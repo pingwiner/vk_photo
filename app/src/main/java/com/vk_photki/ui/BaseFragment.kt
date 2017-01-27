@@ -43,15 +43,15 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
         super<Fragment>.onCreate(state);
     }
 
-    override public fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         ownerId = getArguments().getInt(BaseFragment.ARG_USER_ID);
         setHasOptionsMenu(true)
         startLoaders();
         setProgressVisibility(true)
-        val view = inflater.inflate(LAYOUT_RESOURCE_ID, container, false);
-        mList = view.findViewById(R.id.list) as RecyclerView;
+        val view = inflater?.inflate(LAYOUT_RESOURCE_ID, container, false);
+        mList = view?.findViewById(R.id.list) as RecyclerView;
         mList?.setHasFixedSize(true);
-        mProgress = view.findViewById(R.id.progress);
+        mProgress = view?.findViewById(R.id.progress);
         setProgressVisibility(true)
         // use a linear layout manager
         var display = getActivity().getWindowManager().getDefaultDisplay();
@@ -97,7 +97,7 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
 
 }
 
-public trait OnDataReadyListener<T> {
+public interface OnDataReadyListener<T> {
     public fun onDataReady(data: List<T>);
     public fun onDataLoadingFailed(error: VKError);
 }

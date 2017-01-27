@@ -33,7 +33,7 @@ public fun getCacheFileFor(context: Context, urlString: String): File? {
     if (urlString.isEmpty()) return null;
     val first = urlString.lastIndexOf('.');
     var last = urlString.indexOf('?');
-    if (last == -1) last = urlString.length();
+    if (last == -1) last = urlString.length;
     var extension = "";
 
     if (last > first) {

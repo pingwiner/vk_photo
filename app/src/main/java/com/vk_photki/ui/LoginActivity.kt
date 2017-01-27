@@ -58,23 +58,17 @@ public class LoginActivity() : ActionBarActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mProgress = findViewById(R.id.download_progress) as ProgressBar
-        VKUIHelper.onCreate(this)
-        VKSdk.initialize(MySdkListener(), CredentialStore().getAppId());
-        if (VKSdk.wakeUpSession()) {
-            Log.d(TAG, "wakeUpSession");
-        }
-
     }
 
     override fun onResume() {
         super.onResume();
-        VKUIHelper.onResume(this);
+
         if (VKSdk.isLoggedIn()) {
             Log.d(TAG, "Logged In");
             showAlbumsFragment(userId);
         } else {
             Log.d(TAG, " not logged In");
-            VKSdk.authorize(
+            VKSdk.login(this,
                     VKScope.FRIENDS,
                     VKScope.PHOTOS,
                     VKScope.GROUPS);
@@ -86,12 +80,12 @@ public class LoginActivity() : ActionBarActivity() {
 
     override fun onDestroy() {
         super.onDestroy();
-        VKUIHelper.onDestroy(this);
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        super.onActivityResult(requestCode, resultCode, data);
-        VKUIHelper.onActivityResult(requestCode, resultCode, data);
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, MySdkListener(this))) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     override public fun onCreateOptionsMenu(menu: Menu) : Boolean {
@@ -148,44 +142,20 @@ public class LoginActivity() : ActionBarActivity() {
         showFragment(getPhotosFragment(ownerId, albumId))
     }
 
-    private inner class MySdkListener : VKSdkListener() {
-        override fun onCaptchaError(captchaError: VKError?) {
-            Log.d(TAG, "onCaptchaError");
-            VKCaptchaDialog(captchaError).show();
+    private inner class MySdkListener(val context : Context) : VKCallback<VKAccessToken> {
+
+
+        override public fun onResult(res: VKAccessToken) {
+            userId = Integer.parseInt(res.userId);
+            showAlbumsFragment(userId);
         }
 
-        override fun onTokenExpired(expiredToken: VKAccessToken?) {
-            Log.d(TAG, "onTokenExpired");
-            VKSdk.authorize(
-                    VKScope.FRIENDS,
-                    VKScope.PHOTOS,
-                    VKScope.GROUPS);
-        }
-
-        override fun onAccessDenied(authorizationError: VKError?) {
-            Log.d(TAG, "onAccessDenied");
-            AlertDialog.Builder(VKUIHelper.getTopActivity())
+        override public fun onError(authorizationError: VKError) {
+            AlertDialog.Builder(context)
                     .setMessage(authorizationError.toString())
                     .show();
         }
 
-        override fun onReceiveNewToken(newToken: VKAccessToken) {
-            Log.d(TAG, "onReceiveNewToken: " + newToken.accessToken);
-            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
-            showAlbumsFragment(userId);
-        }
-
-        override fun onAcceptUserToken(token: VKAccessToken) {
-            Log.d(TAG, "onAcceptUserToken: " + token.accessToken);
-            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
-            showAlbumsFragment(userId);
-        }
-
-        override fun onRenewAccessToken(token: VKAccessToken) {
-            Log.d(TAG, "onRenewAccessToken: " + token.accessToken);
-            userId = Integer.parseInt(VKSdk.getAccessToken().userId);
-            showAlbumsFragment(userId);
-        }
     }
 
     public fun getUserId(): Int {

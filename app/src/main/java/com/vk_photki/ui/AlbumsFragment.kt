@@ -79,7 +79,7 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
 
     private fun findAlbumById(id: Int): VKApiPhotoAlbum? {
         if (mDataset == null) return null;
-        for (i in 0..mDataset!!.size()) {
+        for (i in 0..mDataset!!.size) {
             val album = mDataset?.get(i)
             if (album!!.id == id) return album;
         }
@@ -87,7 +87,7 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
     }
 
     private fun getMaxPhotoPath(photo: VKApiPhoto): String? {
-        val types = charArray('w' ,'z', 'y' , 'x', 'm', 's');
+        val types = charArrayOf('w' ,'z', 'y' , 'x', 'm', 's');
 
         for (type in types) {
             val photoSize = photo.src.getByType(type);
@@ -99,7 +99,7 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
 
 
     override fun onPhotosReady(ownerId: Int, albumId: Int, photos: List<VKApiPhoto>) {
-        Log.d(TAG, "onPhotosReady: " + ownerId + " " + albumId + " " + photos.size())
+        Log.d(TAG, "onPhotosReady: " + ownerId + " " + albumId + " " + photos.size)
         val album = findAlbumById(albumId);
         if (album == null) return;
         for (photo in photos) {

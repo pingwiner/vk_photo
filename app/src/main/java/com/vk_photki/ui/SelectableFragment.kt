@@ -17,7 +17,9 @@ abstract class SelectableFragment<T : VKApiModel>() : BaseFragment<T>() {
 
         if (mSelectedItems.containsKey(position)) {
             val b = mSelectedItems.get(position)?.not()
-            mSelectedItems.put(position, b)
+            if (b != null) {
+                mSelectedItems.put(position, b)
+            }
         } else {
             mSelectedItems.put(position, true)
         }
@@ -25,23 +27,25 @@ abstract class SelectableFragment<T : VKApiModel>() : BaseFragment<T>() {
     }
 
     protected fun selectAll() {
-        for (i in 0..mDataset!!.size() - 1) {
+        for (i in 0..mDataset!!.size - 1) {
             mSelectedItems.put(i, true)
         }
         mList?.getAdapter()?.notifyDataSetChanged()
     }
 
     protected fun unselectAll() {
-        for (i in 0..mDataset!!.size() - 1) {
+        for (i in 0..mDataset!!.size - 1) {
             mSelectedItems.put(i, false)
         }
         mList?.getAdapter()?.notifyDataSetChanged()
     }
 
     protected fun getSelectedItems(): List<T> {
-        val result = ArrayList<T>(mDataset!!.size())
-        for (i in 0..mDataset!!.size() - 1) {
-            if (mSelectedItems.containsKey(i) && mSelectedItems.get(i)) {
+        val result = ArrayList<T>(mDataset!!.size)
+        for (i in 0..mDataset!!.size - 1) {
+            var selected : Boolean? = mSelectedItems.get(i)
+            if (selected == null) selected = false;
+            if (mSelectedItems.containsKey(i) && selected) {
                 result.add(mDataset!!.get(i))
             }
         }

@@ -14,7 +14,7 @@ import java.util.ArrayList
 
 public class VkFriendsLoader(var userId: Int, var listener: OnDataReadyListener<VKApiUser>) : VkLoader<VKApiUser>() {
 
-    trait OnFriendsLoadListener {
+    interface OnFriendsLoadListener {
         fun onFriendsReady(friends: List<VKApiUser>);
         fun onFriendsLoadingFailed(error: VKError)
     }

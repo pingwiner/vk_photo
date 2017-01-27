@@ -33,20 +33,17 @@ import com.vk.sdk.api.model.VKWallPostResult;
  */
 public class VKApiWall extends VKApiBase {
     public static final String EXTENDED = VKApiConst.EXTENDED;
+
     public VKRequest get(VKParameters params) {
-        if (params.containsKey(EXTENDED) && (Integer)(params.get(EXTENDED)) == 1) {
-            return prepareRequest("get", params, VKRequest.HttpMethod.GET, VKPostArray.class);
+        if (params.containsKey(EXTENDED) && (Integer) (params.get(EXTENDED)) == 1) {
+            return prepareRequest("get", params, VKPostArray.class);
         } else {
             return prepareRequest("get", params);
         }
     }
 
     public VKRequest getById(VKParameters params) {
-        if (params.containsKey(EXTENDED) && ((Integer) params.get(EXTENDED)) == 1) {
-            return prepareRequest("get", params, VKRequest.HttpMethod.GET, VKPostArray.class);
-        } else {
-            return prepareRequest("get", params);
-        }
+        return prepareRequest("getById", params, VKPostArray.class);
     }
 
     public VKRequest savePost(VKParameters params) {
@@ -55,7 +52,7 @@ public class VKApiWall extends VKApiBase {
 
 
     public VKRequest post(VKParameters parameters) {
-        return prepareRequest("post", parameters, VKRequest.HttpMethod.POST, VKWallPostResult.class);
+        return prepareRequest("post", parameters, VKWallPostResult.class);
     }
 
     public VKRequest repost(VKParameters params) {
@@ -79,7 +76,7 @@ public class VKApiWall extends VKApiBase {
     }
 
     public VKRequest getComments(VKParameters params) {
-        return prepareRequest("getComments", params, VKRequest.HttpMethod.GET, VKCommentArray.class);
+        return prepareRequest("getComments", params, VKCommentArray.class);
     }
 
     public VKRequest addComment(VKParameters params) {

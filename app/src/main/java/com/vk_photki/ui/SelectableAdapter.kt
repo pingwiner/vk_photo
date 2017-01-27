@@ -14,7 +14,9 @@ abstract class SelectableAdapter<T>(context: Context, data: List<T>, var selecte
     override fun onBindViewHolder(holder: Holder?, position: Int) {
         super.onBindViewHolder(holder, position)
         holder?.checkbox?.setVisibility(View.VISIBLE)
-        val checked = selectedItems.containsKey(position) && selectedItems.get(position)
+        var selected : Boolean? = selectedItems.get(position)
+        if (selected == null) selected = false;
+        val checked : Boolean = selectedItems.containsKey(position) && selected
         holder!!.checkbox!!.setChecked(checked)
         //holder!!.checkbox!!.setOnCheckedChangeListener { (compoundButton, b) -> selectedItems.put(position, b) }
     }

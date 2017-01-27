@@ -22,10 +22,13 @@
 package com.vk.sdk.api;
 
 import com.vk.sdk.api.methods.VKApiAudio;
+import com.vk.sdk.api.methods.VKApiDocs;
 import com.vk.sdk.api.methods.VKApiFriends;
 import com.vk.sdk.api.methods.VKApiGroups;
+import com.vk.sdk.api.methods.VKApiMessages;
 import com.vk.sdk.api.methods.VKApiPhotos;
 import com.vk.sdk.api.methods.VKApiUsers;
+import com.vk.sdk.api.methods.VKApiVideo;
 import com.vk.sdk.api.methods.VKApiWall;
 import com.vk.sdk.api.photo.VKUploadAlbumPhotoRequest;
 import com.vk.sdk.api.photo.VKUploadImage;
@@ -52,7 +55,13 @@ public class VKApi {
     public static VKApiFriends friends() {
         return new VKApiFriends();
     }
-
+    /**
+     * https://vk.com/dev/messages
+     * Returns object for preparing requests to messages part of API
+     */
+    public static VKApiMessages messages() {
+        return new VKApiMessages();
+    }
     /**
      * https://vk.com/dev/wall
      * Returns object for preparing requests to wall part of API
@@ -67,6 +76,14 @@ public class VKApi {
      */
     public static VKApiPhotos photos() {
         return new VKApiPhotos();
+    }
+
+    /**
+     * https://vk.com/dev/docs
+     * Returns object for preparing requests to docs part of API
+     */
+    public static VKApiDocs docs() {
+        return new VKApiDocs();
     }
 
     /**
@@ -140,5 +157,12 @@ public class VKApi {
     public static VKRequest uploadMessagesPhotoRequest(VKUploadImage image) {
         return new VKUploadMessagesPhotoRequest(image);
     }
-	
+
+    /**
+     * https://vk.com/dev/video
+     * Returns object for preparing requests to audio part of API
+     */
+    public static VKApiVideo video() {
+        return new VKApiVideo();
+    }
 }

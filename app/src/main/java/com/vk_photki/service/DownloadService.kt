@@ -36,7 +36,7 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
 
     override public fun onCreate() {
         super<Service>.onCreate()
-        mNM = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;;
+        mNM = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;
     }
 
     override public fun onDestroy() {
@@ -50,7 +50,7 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
         val albumName = intent.getStringExtra("album")
         synchronized(mTasks) {
             mTasks.add(ServiceTask(url, albumName))
-            if (mTasks.size() > mMax) mMax = mTasks.size()
+            if (mTasks.size > mMax) mMax = mTasks.size
         }
         checkTasks();
         return Service.START_STICKY;
@@ -60,13 +60,13 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
         Log.d(TAG, "checkTasks");
 
         if ((mWorker == null) || (mWorker!!.isComplete())) {
-            if (mTasks.size() > 0) {
+            if (mTasks.size > 0) {
                 synchronized(mTasks) {
                     val task = mTasks.get(0);
                     mWorker = WorkerTask(this, this);
-                    mWorker?.execute(task.url, task.albumName)
-                    mTasks.remove(0);
-                    notify(100 - mTasks.size() * 100 / mMax)
+                    mWorker?.execute(task.url, task.albumName);
+                    mTasks.remove(task);
+                    notify(100 - mTasks.size * 100 / mMax)
                 }
             } else {
                 notify(100)

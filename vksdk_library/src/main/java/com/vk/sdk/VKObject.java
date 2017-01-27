@@ -28,7 +28,7 @@ public class VKObject {
     private static final HashMap<Long, VKObject> sRegisteredObjects;
     private long mRegisteredObjectId = 0;
     static {
-        sRegisteredObjects = new HashMap<Long, VKObject>();
+        sRegisteredObjects = new HashMap<>();
     }
 
     /**
@@ -45,6 +45,9 @@ public class VKObject {
      * @return Registered object id
      */
     public long registerObject() {
+        if (sRegisteredObjects.containsKey(mRegisteredObjectId)) {
+            return mRegisteredObjectId;
+        }
         Random rand = new Random();
         while (true) {
             long nextRand = rand.nextLong();
@@ -65,5 +68,4 @@ public class VKObject {
         sRegisteredObjects.remove(mRegisteredObjectId);
         mRegisteredObjectId = 0;
     }
-
 }

@@ -36,7 +36,7 @@ abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
     }
 
     override fun getItemCount(): Int {
-        return data.size()
+        return data.size
     }
 
     public fun getItem(position: Int): T {
