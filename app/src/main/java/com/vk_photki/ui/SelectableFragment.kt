@@ -10,45 +10,24 @@ import java.util.HashMap
  */
 
 abstract class SelectableFragment<T : VKApiModel>() : BaseFragment<T>() {
-    protected val mSelectedItems: HashMap<Int, Boolean> = HashMap<Int, Boolean>();
-
-    protected fun toggleSelection(position: Int) {
-        Log.d(TAG, "toggleSelection: " + position);
-
-        if (mSelectedItems.containsKey(position)) {
-            val b = mSelectedItems.get(position)?.not()
-            if (b != null) {
-                mSelectedItems.put(position, b)
-            }
-        } else {
-            mSelectedItems.put(position, true)
-        }
-        mList?.getAdapter()?.notifyDataSetChanged()
-    }
 
     protected fun selectAll() {
-        for (i in 0..mDataset!!.size - 1) {
-            mSelectedItems.put(i, true)
-        }
-        mList?.getAdapter()?.notifyDataSetChanged()
+        val adapter = mList?.getAdapter() as SelectableAdapter<T>
+        adapter.selectAll()
     }
 
     protected fun unselectAll() {
-        for (i in 0..mDataset!!.size - 1) {
-            mSelectedItems.put(i, false)
-        }
-        mList?.getAdapter()?.notifyDataSetChanged()
+        val adapter = mList?.getAdapter() as SelectableAdapter<T>
+        adapter.unselectAll()
     }
 
     protected fun getSelectedItems(): List<T> {
-        val result = ArrayList<T>(mDataset!!.size)
-        for (i in 0..mDataset!!.size - 1) {
-            var selected : Boolean? = mSelectedItems.get(i)
-            if (selected == null) selected = false;
-            if (mSelectedItems.containsKey(i) && selected) {
-                result.add(mDataset!!.get(i))
-            }
-        }
-        return result;
+        val adapter = mList?.getAdapter() as SelectableAdapter<T>
+        return adapter.getSelectedItems()
+    }
+
+    protected fun toggleSelection(position: Int) {
+        val adapter = mList?.getAdapter() as SelectableAdapter<T>
+        adapter.toggleSelection(position)
     }
 }

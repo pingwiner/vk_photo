@@ -61,15 +61,15 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
     }
 
     override fun getAdapter(context: Context, data: List<VKApiPhotoAlbum>): BaseAdapter<VKApiPhotoAlbum> {
-        return AlbumAdapter(context, data, mSelectedItems)
+        return AlbumAdapter(context, data)
     }
 
     override fun onItemClick(view: View, position: Int) {
         val album = (mList?.getAdapter() as AlbumAdapter).getItem(position)
         Log.d(TAG, "click: " + album.id);
         //setProgressVisibility(true)
-        VkPhotoLoader(ownerId, album.id, this)
-        //(getActivity() as LoginActivity).showPhotosFragment(ownerId, album.id)
+        //VkPhotoLoader(ownerId, album.id, this)
+        (getActivity() as LoginActivity).showPhotosFragment(ownerId, album.id, album.title)
 
     }
 

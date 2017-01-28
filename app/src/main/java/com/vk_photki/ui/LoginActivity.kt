@@ -15,24 +15,33 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache
+import com.nostra13.universalimageloader.core.ImageLoader
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.vk.sdk.*
 import com.vk.sdk.api.VKError
 import com.vk.sdk.dialogs.VKCaptchaDialog
+import com.vk_photki.CustomApplication
 import com.vk_photki.R
 import com.vk_photki.service.DownloadService
-import java.lang.Integer
+import com.nostra13.universalimageloader.utils.StorageUtils
 
-public class LoginActivity() : ActionBarActivity() {
+
+
+class LoginActivity() : ActionBarActivity() {
     private val TAG = "LoginActivity";
     private var userId = 0;
     private var mProgress: ProgressBar? = null;
     private val mReceiver = Receiver();
+    private val credentialStore = CredentialStore();
+    private val activity = this;
 
     inner class Receiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.getAction();
             Log.d(TAG, "onReceive " + action);
-            if (action.equals(DownloadService.ACTION_COMPLETE)) {
+
+            if (action == DownloadService.ACTION_COMPLETE) {
                 val args = intent.getExtras();
                 if (args != null) {
                     val percents = args.getInt(DownloadService.ARG_PERCENTS)
@@ -44,6 +53,13 @@ public class LoginActivity() : ActionBarActivity() {
                         mProgress?.setVisibility(View.VISIBLE);
                     }
                 }
+            } else if (action == CustomApplication.ACTION_RELOGIN) {
+                userId = 0;
+                credentialStore.setUserId(context, 0);
+                VKSdk.login(activity,
+                        VKScope.FRIENDS,
+                        VKScope.PHOTOS,
+                        VKScope.GROUPS);
             }
         }
 
@@ -58,11 +74,21 @@ public class LoginActivity() : ActionBarActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mProgress = findViewById(R.id.download_progress) as ProgressBar
+
+        val config : ImageLoaderConfiguration  = ImageLoaderConfiguration.Builder(this)
+                .memoryCacheExtraOptions(320, 320) // default = device screen dimensions
+                .diskCacheExtraOptions(320, 320, null)
+                .memoryCache(LruMemoryCache(2 * 1024 * 1024))
+                .memoryCacheSize(2 * 1024 * 1024)
+                .diskCacheSize(50 * 1024 * 1024)
+                .diskCacheFileCount(500)
+                .build();
+        ImageLoader.getInstance().init(config);
     }
 
     override fun onResume() {
         super.onResume();
-
+        userId = credentialStore.getUserId(this);
         if (VKSdk.isLoggedIn()) {
             Log.d(TAG, "Logged In");
             showAlbumsFragment(userId);
@@ -82,7 +108,7 @@ public class LoginActivity() : ActionBarActivity() {
         super.onDestroy();
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, MySdkListener(this))) {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -137,20 +163,20 @@ public class LoginActivity() : ActionBarActivity() {
         showFragment(getGroupsFragment(userId))
     }
 
-    public fun showPhotosFragment(ownerId: Int, albumId: Int) {
+    public fun showPhotosFragment(ownerId: Int, albumId: Int, title: String) {
         Log.d(TAG, "showPhotosFragment");
-        showFragment(getPhotosFragment(ownerId, albumId))
+        showFragment(getPhotosFragment(ownerId, albumId, title))
     }
 
     private inner class MySdkListener(val context : Context) : VKCallback<VKAccessToken> {
 
-
-        override public fun onResult(res: VKAccessToken) {
+        override fun onResult(res: VKAccessToken) {
             userId = Integer.parseInt(res.userId);
+            credentialStore.setUserId(context, userId)
             showAlbumsFragment(userId);
         }
 
-        override public fun onError(authorizationError: VKError) {
+        override fun onError(authorizationError: VKError) {
             AlertDialog.Builder(context)
                     .setMessage(authorizationError.toString())
                     .show();
@@ -158,7 +184,9 @@ public class LoginActivity() : ActionBarActivity() {
 
     }
 
-    public fun getUserId(): Int {
-        return userId;
+    fun getUserId(): Int {
+        return credentialStore.getUserId(this)
     }
+
+
 }

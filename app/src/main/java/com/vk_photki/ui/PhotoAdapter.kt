@@ -11,15 +11,15 @@ import java.util.HashMap
  * Created by nightrain on 4/25/15.
  */
 
-class PhotoAdapter(context: Context, photos: List<VKApiPhoto>, selectedItems: HashMap<Int, Boolean>) :
-        SelectableAdapter<VKApiPhoto>(context, photos, selectedItems) {
+class PhotoAdapter(context: Context, photos: List<VKApiPhoto>) :
+        SelectableAdapter<VKApiPhoto>(context, photos) {
 
     override fun getTitle(item: VKApiPhoto): String {
         return item.text
     }
 
     override fun getThumbSrc(item: VKApiPhoto): String {
-        return item.src.getByType('m')
+        return item.src.getByType('x')
     }
 
     override fun getLayoutId(): Int {

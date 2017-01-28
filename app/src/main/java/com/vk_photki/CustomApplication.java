@@ -1,6 +1,7 @@
 package com.vk_photki;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
@@ -11,12 +12,14 @@ import com.vk.sdk.VKSdk;
  */
 
 public class CustomApplication extends Application {
+    public static final String ACTION_RELOGIN = "com.vk_photki.ACTION_RELOGIN";
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
             if (newToken == null) {
-                // VKAccessToken is invalid
+                Intent i = new Intent(ACTION_RELOGIN);
+                sendBroadcast(i);
             }
         }
     };

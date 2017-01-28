@@ -58,7 +58,8 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
         var size = Point();
         display.getSize(size);
         val width = size.x;
-        mLayoutManager = StaggeredGridLayoutManager(width / 200, StaggeredGridLayoutManager.VERTICAL);
+        val cardSize = this.activity.resources.getDimension(R.dimen.card_size);
+        mLayoutManager = StaggeredGridLayoutManager(  (size.x / cardSize).toInt(), StaggeredGridLayoutManager.VERTICAL);
         mList?.setLayoutManager(mLayoutManager);
         return view;
     }

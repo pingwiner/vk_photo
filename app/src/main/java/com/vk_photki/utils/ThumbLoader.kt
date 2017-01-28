@@ -2,10 +2,16 @@ package com.vk_photki.utils
 
 import android.content.Context
 import android.os.Environment
+import com.nostra13.universalimageloader.core.ImageLoader
 import com.vk_photki.service.ImgCacheTask
 import java.io.File
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
+import android.graphics.Bitmap
+import android.view.View
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener
+
+
 
 /**
  * Created by nightrain on 4/12/15.

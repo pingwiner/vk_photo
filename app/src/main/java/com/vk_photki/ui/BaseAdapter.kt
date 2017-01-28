@@ -10,12 +10,13 @@ import android.view.ViewGroup
 /**
  * Created by nightrain on 4/22/15.
  */
-abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
+abstract public class BaseAdapter<T>(val context: Context, val data: List<T>)
     : RecyclerView.Adapter<Holder>() {
 
     override fun onBindViewHolder(holder: Holder?, position: Int) {
         val item = data.get(position);
         if (holder == null) return;
+
         if (holder.title != null) {
             holder.title?.setText(getTitle(item))
         }
@@ -32,7 +33,7 @@ abstract public class BaseAdapter<T>(var context: Context, var data: List<T>)
         if (parent == null) return null;
         val v = LayoutInflater.from(parent.getContext())
                 .inflate(getLayoutId(), parent, false);
-        return Holder(v);
+        return Holder(v, this);
     }
 
     override fun getItemCount(): Int {
