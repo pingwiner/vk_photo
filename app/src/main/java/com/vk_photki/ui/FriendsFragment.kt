@@ -33,7 +33,7 @@ public class FriendsFragment() : BaseFragment<VKApiUser>() {
     override fun onItemClick(view: View, position: Int) {
         val friend = (mList?.getAdapter() as FriendAdapter).getItem(position)
         Log.d(TAG, "click: " + friend.id);
-        (getActivity() as LoginActivity).showAlbumsFragment(friend.id)
+        (getActivity() as LoginActivity).showAlbumsFragment(friend.id, friend.first_name + " " + friend.last_name)
     }
 
 }

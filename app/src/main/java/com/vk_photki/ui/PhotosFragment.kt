@@ -11,6 +11,7 @@ import com.vk.sdk.api.model.VKApiPhotoAlbum
 import com.vk_photki.R
 import com.vk_photki.api.VkPhotoLoader
 import com.vk_photki.utils.Starter
+import com.vk_photki.utils.getBiggestPhotoUrl
 
 /**
  * Created by nightrain on 4/25/15.
@@ -53,11 +54,12 @@ class PhotosFragment() : SelectableFragment<VKApiPhoto>(), VkPhotoLoader.OnAlbum
     }
 
     override public fun onOptionsItemSelected(item: MenuItem) : Boolean {
+        val userName = arguments.getString(ARG_USER_NAME)
         when(item.getItemId()) {
             R.id.action_download -> {
                 val selectedItems = getSelectedItems()
                 for (photo in selectedItems) {
-                    Starter.startService(activity, photo.photo_2560, title)
+                    Starter.startService(activity, userName, photo.getBiggestPhotoUrl(), title)
                 }
             }
             R.id.action_select_all -> {
@@ -69,12 +71,13 @@ class PhotosFragment() : SelectableFragment<VKApiPhoto>(), VkPhotoLoader.OnAlbum
     }
 }
 
-public fun getPhotosFragment(ownerId: Int, albumId: Int, title: String): PhotosFragment {
+public fun getPhotosFragment(ownerId: Int, ownerName : String?, albumId: Int, title: String): PhotosFragment {
     val frag = PhotosFragment()
     val args = Bundle();
     args.putInt(BaseFragment.ARG_USER_ID, ownerId)
     args.putInt(frag.ARG_ALBUM_ID, albumId)
     args.putString(frag.ARG_ALBUM_TITLE, title)
+    args.putString(BaseFragment.ARG_USER_NAME, ownerName)
     frag.setArguments(args)
     return frag
 }

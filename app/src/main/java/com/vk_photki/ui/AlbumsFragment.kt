@@ -11,9 +11,11 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.CheckBox
 import android.widget.ListView
 import android.widget.Toast
 import com.vk.sdk.api.VKError
@@ -29,6 +31,7 @@ import com.vk_photki.api.VkFriendsLoader
 import com.vk_photki.api.VkGroupsLoader
 import com.vk_photki.service.DownloadService
 import com.vk_photki.utils.Starter
+import com.vk_photki.utils.getBiggestPhotoUrl
 import java.util.ArrayList
 
 /**
@@ -39,9 +42,15 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
         VkPhotoLoader.OnAlbumLoadListener {
     override protected val TAG: String = "AlbumsFragment";
     override protected val LAYOUT_RESOURCE_ID: Int = R.layout.fragment_albums;
+    private var ownerName: String? = null
+    private val receiver = Receiver()
 
     override public fun onResume() {
         super<SelectableFragment>.onResume()
+
+        if (arguments != null) {
+            ownerName = arguments.getString(ARG_USER_NAME)
+        }
         val act:LoginActivity = getActivity() as LoginActivity;
         val id = act.getUserId();
         if (id == ownerId) {
@@ -54,6 +63,15 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
             }
 
         }
+
+        val filter = IntentFilter()
+        filter.addAction(AlbumAdapter.ACTION_ALBUM_CLICKED)
+        activity.registerReceiver(receiver, filter)
+    }
+
+    override public fun onPause() {
+        super.onPause()
+        activity.unregisterReceiver(receiver)
     }
 
     override fun startLoaders() {
@@ -67,10 +85,20 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
     override fun onItemClick(view: View, position: Int) {
         val album = (mList?.getAdapter() as AlbumAdapter).getItem(position)
         Log.d(TAG, "click: " + album.id);
-        //setProgressVisibility(true)
-        //VkPhotoLoader(ownerId, album.id, this)
-        (getActivity() as LoginActivity).showPhotosFragment(ownerId, album.id, album.title)
+    }
 
+    inner class Receiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.getAction();
+            if (action == AlbumAdapter.ACTION_ALBUM_CLICKED) {
+                val albumId = intent.getIntExtra(AlbumAdapter.ARG_ALBUM_ID, 0)
+                val albumTitle = intent.getStringExtra(AlbumAdapter.ARG_ALBUM_TITLE)
+                if (ownerName == null) {
+                    ownerName = getString(R.string.my_photos)
+                }
+                (getActivity() as LoginActivity).showPhotosFragment(ownerId, ownerName, albumId, albumTitle)
+            }
+        }
     }
 
     override public fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -106,7 +134,7 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
             val url = getMaxPhotoPath(photo);
             if (url == null) continue;
             Log.d(TAG, "url: " + url + ", title: " + album.title);
-            Starter.startService(getActivity(), url, album.title);
+            Starter.startService(getActivity(), ownerName, url, album.title);
         }
     }
 
@@ -114,14 +142,31 @@ class AlbumsFragment() : SelectableFragment<VKApiPhotoAlbum>() ,
         Log.d(TAG, "onPhotosLoadingFailed: " + error.errorMessage);
     }
 
+    override fun onOptionsItemSelected(item: MenuItem) : Boolean {
+        val userName = arguments.getString(ARG_USER_NAME)
+        when(item.getItemId()) {
+            R.id.action_download -> {
+                val selectedItems = getSelectedItems()
+                for (album : VKApiPhotoAlbum in selectedItems) {
+                    VkPhotoLoader(ownerId, album.id, this)
+                }
+            }
+            R.id.action_select_all -> {
+                selectAll();
+            }
+
+        }
+        return super<SelectableFragment>.onOptionsItemSelected(item);
+    }
 
 }
 
 
-fun getAlbumsFragment(userId: Int) : AlbumsFragment {
+fun getAlbumsFragment(userId: Int, userName: String) : AlbumsFragment {
     Log.d("getAlbumsFragment", "userId: " + userId)
     val args = Bundle()
     args.putInt(BaseFragment.ARG_USER_ID, userId)
+    args.putString(BaseFragment.ARG_USER_NAME, userName)
     var result = AlbumsFragment()
     result.setArguments(args)
     return result

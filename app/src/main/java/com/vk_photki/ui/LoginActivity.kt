@@ -75,15 +75,6 @@ class LoginActivity() : ActionBarActivity() {
         setContentView(R.layout.activity_main)
         mProgress = findViewById(R.id.download_progress) as ProgressBar
 
-        val config : ImageLoaderConfiguration  = ImageLoaderConfiguration.Builder(this)
-                .memoryCacheExtraOptions(320, 320) // default = device screen dimensions
-                .diskCacheExtraOptions(320, 320, null)
-                .memoryCache(LruMemoryCache(2 * 1024 * 1024))
-                .memoryCacheSize(2 * 1024 * 1024)
-                .diskCacheSize(50 * 1024 * 1024)
-                .diskCacheFileCount(500)
-                .build();
-        ImageLoader.getInstance().init(config);
     }
 
     override fun onResume() {
@@ -91,7 +82,7 @@ class LoginActivity() : ActionBarActivity() {
         userId = credentialStore.getUserId(this);
         if (VKSdk.isLoggedIn()) {
             Log.d(TAG, "Logged In");
-            showAlbumsFragment(userId);
+            showAlbumsFragment(userId, getString(R.string.my_photos));
         } else {
             Log.d(TAG, " not logged In");
             VKSdk.login(this,
@@ -126,7 +117,7 @@ class LoginActivity() : ActionBarActivity() {
         if (userId != 0) {
             when (item.getItemId()) {
                 R.id.action_albums -> {
-                    showAlbumsFragment(userId);
+                    showAlbumsFragment(userId, getString(R.string.my_photos));
                 }
                 R.id.action_friends -> {
                     showFriendsFragment(userId);
@@ -148,9 +139,9 @@ class LoginActivity() : ActionBarActivity() {
 
     }
 
-    public fun showAlbumsFragment(userId: Int) {
+    public fun showAlbumsFragment(userId: Int, userName: String) {
         Log.d(TAG, "showMyAlbumsFragment");
-        showFragment(getAlbumsFragment(userId))
+        showFragment(getAlbumsFragment(userId, userName))
     }
 
     public fun showFriendsFragment(userId: Int) {
@@ -163,9 +154,9 @@ class LoginActivity() : ActionBarActivity() {
         showFragment(getGroupsFragment(userId))
     }
 
-    public fun showPhotosFragment(ownerId: Int, albumId: Int, title: String) {
+    public fun showPhotosFragment(ownerId: Int, ownerName: String?, albumId: Int, title: String) {
         Log.d(TAG, "showPhotosFragment");
-        showFragment(getPhotosFragment(ownerId, albumId, title))
+        showFragment(getPhotosFragment(ownerId, ownerName, albumId, title))
     }
 
     private inner class MySdkListener(val context : Context) : VKCallback<VKAccessToken> {
@@ -173,7 +164,7 @@ class LoginActivity() : ActionBarActivity() {
         override fun onResult(res: VKAccessToken) {
             userId = Integer.parseInt(res.userId);
             credentialStore.setUserId(context, userId)
-            showAlbumsFragment(userId);
+            showAlbumsFragment(userId, getString(R.string.my_photos));
         }
 
         override fun onError(authorizationError: VKError) {

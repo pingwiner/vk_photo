@@ -13,7 +13,7 @@ abstract class SelectableFragment<T : VKApiModel>() : BaseFragment<T>() {
 
     protected fun selectAll() {
         val adapter = mList?.getAdapter() as SelectableAdapter<T>
-        adapter.selectAll()
+        adapter.toggleSelection()
     }
 
     protected fun unselectAll() {

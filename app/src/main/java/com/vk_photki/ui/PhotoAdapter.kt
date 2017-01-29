@@ -26,4 +26,14 @@ class PhotoAdapter(context: Context, photos: List<VKApiPhoto>) :
         return R.layout.album_layout
     }
 
+    override fun click(item: VKApiPhoto) {
+        var i = 0;
+        for (d in data) {
+            if (d.id == item.id) {
+                toggleSelection(i)
+            }
+            i++
+        }
+    }
+
 }

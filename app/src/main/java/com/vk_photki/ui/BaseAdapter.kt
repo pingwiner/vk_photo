@@ -25,9 +25,12 @@ abstract public class BaseAdapter<T>(val context: Context, val data: List<T>)
             if (thumbSrc != null) {
                 holder.setCover(context, thumbSrc);
             }
+            holder.cover?.setOnClickListener { click(item) }
         }
 
     }
+
+    abstract fun click(item : T)
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder? {
         if (parent == null) return null;
@@ -47,6 +50,7 @@ abstract public class BaseAdapter<T>(val context: Context, val data: List<T>)
     protected abstract fun getTitle(item: T) : String;
     protected abstract fun getThumbSrc(item: T) : String;
     protected abstract fun getLayoutId() : Int;
+
 
 }
 

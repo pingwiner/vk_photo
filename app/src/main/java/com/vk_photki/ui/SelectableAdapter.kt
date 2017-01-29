@@ -62,4 +62,11 @@ abstract class SelectableAdapter<T>(context: Context, data: List<T>) :
         selectedItems[i] = !selectedItems[i]
         notifyItemChanged(i)
     }
+
+    fun toggleSelection() {
+        for (i in 0..data.size - 1) {
+            selectedItems[i] = !selectedItems[i]
+        }
+        notifyDataSetChanged()
+    }
 }

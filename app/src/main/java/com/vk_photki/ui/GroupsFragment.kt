@@ -35,7 +35,7 @@ public class GroupsFragment() : BaseFragment<VKApiCommunity>() {
     override fun onItemClick(view: View, position: Int) {
         val group = (mList?.getAdapter() as GroupAdapter).getItem(position)
         Log.d(TAG, "click: " + group.id);
-        (getActivity() as LoginActivity).showAlbumsFragment(-group.id)
+        (getActivity() as LoginActivity).showAlbumsFragment(-group.id, group.name)
     }
 
 

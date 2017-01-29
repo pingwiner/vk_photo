@@ -37,6 +37,7 @@ abstract class BaseFragment<T : VKApiModel>() : Fragment(),
 
     companion object Args {
         public val ARG_USER_ID: String = "ARG_USER_ID"
+        public val ARG_USER_NAME: String = "ARG_USER_NAME"
     }
 
     override public fun onCreate(state: Bundle?) {
@@ -102,6 +103,7 @@ public interface OnDataReadyListener<T> {
     public fun onDataReady(data: List<T>);
     public fun onDataLoadingFailed(error: VKError);
 }
+
 
 
 

@@ -5,6 +5,7 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.nostra13.universalimageloader.core.ImageLoader
 import org.apache.http.util.ByteArrayBuffer
 import java.io.*
 
@@ -15,15 +16,18 @@ import java.io.*
 public class FsUtils {
     private val TAG ="FsUtils";
     private val GALLERY_PATH = "/VK_gallery/";
-    private val BUFFER_SIZE = 16384;
+    private val BUFFER_SIZE = 65536;
 
-    public fun createExternalStoragePublicPicture(context: Context, inputStream: InputStream, filename: String, albumName:String ) {
+    public fun createExternalStoragePublicPicture(context: Context, inputStream: InputStream, filename: String, albumName:String, ownerName : String?) {
         try {
             var path = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES + GALLERY_PATH);
             path.mkdir();
             path = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES + GALLERY_PATH + albumName);
+                    Environment.DIRECTORY_PICTURES + GALLERY_PATH + ownerName)
+            path.mkdir()
+            path = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES + GALLERY_PATH + ownerName + "/" + albumName);
             path.mkdir();
             val file = File(path, filename);
             val bis = BufferedInputStream(inputStream, BUFFER_SIZE);

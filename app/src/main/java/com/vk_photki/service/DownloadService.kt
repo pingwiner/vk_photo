@@ -48,8 +48,9 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
         if (intent == null) return Service.START_STICKY;
         val url = intent.getStringExtra("url")
         val albumName = intent.getStringExtra("album")
+        val ownerName = intent.getStringExtra("owner")
         synchronized(mTasks) {
-            mTasks.add(ServiceTask(url, albumName))
+            mTasks.add(ServiceTask(ownerName, url, albumName))
             if (mTasks.size > mMax) mMax = mTasks.size
         }
         checkTasks();
@@ -64,7 +65,7 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
                 synchronized(mTasks) {
                     val task = mTasks.get(0);
                     mWorker = WorkerTask(this, this);
-                    mWorker?.execute(task.url, task.albumName);
+                    mWorker?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, task.url, task.albumName, task.ownerName);
                     mTasks.remove(task);
                     notify(100 - mTasks.size * 100 / mMax)
                 }
@@ -89,7 +90,7 @@ public class DownloadService : Service(), WorkerTask.OnTaskCompleteListener {
         checkTasks();
     }
 
-    private data class ServiceTask(var url: String, var albumName: String) {}
+    private data class ServiceTask(var ownerName: String, var url: String, var albumName: String) {}
 }
 
 

@@ -25,7 +25,11 @@ public class ImgCacheTask(var context: Context, var listener: ImgCacheTask.OnTas
         Log.d(TAG, "loading " + urlString);
         val url = URL(urlString);
         val conn = url.openConnection();
-        FsUtils().createCachePicture(context, conn.getInputStream(), urlString!!)
+        try {
+            FsUtils().createCachePicture(context, conn.getInputStream(), urlString!!)
+        } catch(e :Exception) {
+            e.printStackTrace()
+        }
         return true;
     }
 
